@@ -9,7 +9,7 @@ spring cloud、druid、lombok、jsoup、joda-time、MySQL
 
 ##主要功能
 
-1、采集中国废品网(http://www.zgfp.com)的废旧物资价格
+1、采集中国废品网的废旧物资价格
 
 ##使用说明 
 
