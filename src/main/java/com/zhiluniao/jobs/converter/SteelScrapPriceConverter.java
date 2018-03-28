@@ -161,21 +161,31 @@ public class SteelScrapPriceConverter implements Converter {
                 if (colsMap.containsKey("priceRange")) {
                     String priceRange = tds.get(colsMap.get("priceRange")).text();
                     String[] lowAndHigh = priceRange.split("-");
-                    price.setLowestPrice(new BigDecimal(lowAndHigh[0].replaceAll(",", "")));
-                    price.setHighestPrice(new BigDecimal(lowAndHigh[1].replaceAll(",", "")));
+                    log.info("priceRange :{}",priceRange);
+                    if(lowAndHigh.length >= 2 && StringUtils.isNotBlank(lowAndHigh[0]) && StringUtils.isNotBlank(lowAndHigh[1])){
+                    	
+                    	log.info("lowAndHigh {}|{}",lowAndHigh[0],lowAndHigh[1]);
+                        price.setLowestPrice(new BigDecimal(lowAndHigh[0].trim().replaceAll(",", "")));
+                        price.setHighestPrice(new BigDecimal(lowAndHigh[1].trim().replaceAll(",", "")));
+                    }else{
+                    	continue;
+                    }
+
                 }
 
                 if (colsMap.containsKey("avgPrice")) {
                     String avgPrice = tds.get(colsMap.get("avgPrice")).text();
                     String[] lowAndHigh = avgPrice.split("-");
-                    if (lowAndHigh.length == 2) {
-                        price.setLowestPrice(new BigDecimal(lowAndHigh[0].replaceAll(",", "")));
-                        price.setHighestPrice(new BigDecimal(lowAndHigh[1].replaceAll(",", "")));
+                    if (lowAndHigh.length == 2 && !StringUtils.isNotBlank(lowAndHigh[0]) && !StringUtils.isNotBlank(lowAndHigh[1])) {
+                        price.setLowestPrice(new BigDecimal(lowAndHigh[0].trim().replaceAll(",", "")));
+                        price.setHighestPrice(new BigDecimal(lowAndHigh[1].trim().replaceAll(",", "")));
                     } else if (StringUtils.isNotBlank(avgPrice)) {
                         if (StringUtils.isNumeric(avgPrice)) {
                             price.setAvgPrice(new BigDecimal(avgPrice));
                         }
 
+                    }else{
+                    	log.info("SteelScrapPriceConverter avgPrice : {}",avgPrice);
                     }
 
                 }

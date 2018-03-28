@@ -81,6 +81,33 @@
 		</property>
 	</bean>
 	
+    <bean id="loadJob2" class="com.zhiluniao.jobs.tasks.LoadNotDownloadTask" />
+	<bean id="loadJob2Detail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="group" value="load_work2" />
+		<property name="name" value="load_data_into_database2" />
+		<!--false表示等上一个任务执行完后再开启新的任务 -->
+		<property name="concurrent" value="false" />
+		<property name="targetObject">
+			<ref bean="loadJob2" />
+		</property>
+		<property name="targetMethod">
+			<value>run</value>
+		</property>
+	</bean>
+	<!-- 调度触发器 -->
+	<bean id="loadTrigger2"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="name" value="load_data_trigger2" />
+		<property name="group" value="work_default" />
+		<property name="jobDetail">
+			<ref bean="loadJob2Detail"/>
+		</property>
+		<property name="cronExpression">
+			<value>0 * * * * ?</value>
+		</property>
+	</bean>
+	
 	
 	<!-- 调度工厂 -->
 	<bean id="scheduler"
@@ -89,6 +116,7 @@
 			<list>
 				<ref bean="myTrigger" />
 				<ref bean="loadTrigger"/>
+				<ref bean="loadTrigger2"/>
 			</list>
 		</property>
 	</bean>

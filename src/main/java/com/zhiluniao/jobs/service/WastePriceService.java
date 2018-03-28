@@ -3,8 +3,12 @@ package com.zhiluniao.jobs.service;
 import java.util.List;
 
 import javax.annotation.Resource;
+
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.zhiluniao.jobs.dao.CollectTaskRespository;
@@ -53,6 +57,12 @@ public class WastePriceService {
     // 查询未入库记录
     public List<CollectTaskEntity> findNotInStorage() {
         return collectTaskRespository.findByIsLoad("0");
+    }
+    
+    public List<CollectTaskEntity> findNotInStorageLimit() {
+    	Pageable pageable = new PageRequest(0, 100);
+    	Page<CollectTaskEntity> result = collectTaskRespository.findAll(pageable);
+        return result.getContent();
     }
 
 }

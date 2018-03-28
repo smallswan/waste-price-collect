@@ -66,7 +66,7 @@ public class PlasticConverter implements Converter {
 				String td1 = tds.get(0).attr("rowspan");
 				Date saveTime = new Date();
 				int rowspan = StringUtils.isEmpty(td1) ? 0 : Integer.valueOf(td1) ;
-				if (rowspan > 0 || tdsNum == size) {
+				if (rowspan > 0 || (tdsNum == size && size >= 3)) {
 					String wasteName = tds.get(1).text();
 					String specifications = tds.get(2).text();
 
@@ -86,7 +86,12 @@ public class PlasticConverter implements Converter {
 						prices.add(price);
 					}
 				} else {
+					if(tds.size() < 2){
+						log.error("数据异常",tds.text());
+						continue;
+					}
 					String wasteName = tds.get(0).text();
+					
 					String specifications = tds.get(1).text();
 					for (int i = 2; i < size - 1; i++) {
 						WastePrice price = new WastePrice();

@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 import org.joda.time.DateTime;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.zhiluniao.jobs.model.entity.WastePrice;
 
@@ -117,15 +117,23 @@ public class AluminiumScrapPriceConverter implements Converter {
                     if (colsMap.containsKey("priceRange")) {
                         String priceRange = tds.get(colsMap.get("priceRange")).text();
                         String[] lowAndHigh = priceRange.split("-");
-                        price.setLowestPrice(new BigDecimal(lowAndHigh[0]));
-                        price.setHighestPrice(new BigDecimal(lowAndHigh[1]));
+                        
+                        
+                        if(lowAndHigh.length >= 2 && StringUtils.isNotBlank(lowAndHigh[0].trim()) && StringUtils.isNotBlank(lowAndHigh[1].trim())){
+                        	log.info("lowAndHigh :{}|{}",lowAndHigh[0],lowAndHigh[1]);
+                        	price.setLowestPrice(new BigDecimal(lowAndHigh[0].trim().replaceAll(",", "")));
+                            price.setHighestPrice(new BigDecimal(lowAndHigh[1].trim().replaceAll(",", "")));
+                        }else{
+                        	log.info("priceRange : {}",priceRange);
+                        }
+
                     }
 
                     if (colsMap.containsKey("avgPrice")) {
                         price.setAvgPrice(new BigDecimal(tds.get(colsMap.get("avgPrice")).text()));
                     }
-                    if (colsMap.containsKey("priceFloat")) {
-                        price.setPriceFloat(new BigDecimal(tds.get(colsMap.get("priceFloat")).text()));
+                    if (colsMap.containsKey("priceFloat") && StringUtils.isNotBlank(tds.get(colsMap.get("priceFloat")).text())) {
+                        price.setPriceFloat(new BigDecimal(tds.get(colsMap.get("priceFloat")).text().trim().replaceAll("", "")));
                     }
 
                     price.setSaveTime(now.toDate());
