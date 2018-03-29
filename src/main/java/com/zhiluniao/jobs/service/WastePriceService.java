@@ -1,14 +1,20 @@
 package com.zhiluniao.jobs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.zhiluniao.jobs.dao.CollectTaskRespository;
@@ -36,6 +42,7 @@ public class WastePriceService {
     public int saveWastePrice(List<WastePrice> list) {
         if (!list.isEmpty()) {
             dao.save(list);
+            dao.flush();
             log.info("保存价格成功");
         }
         return 0;
@@ -47,11 +54,12 @@ public class WastePriceService {
     }
 
     public void saveCollectTask(CollectTaskEntity task) {
-        collectTaskRespository.save(task);
+        collectTaskRespository.saveAndFlush(task);
     }
 
     public void saveCollectTasks(List<CollectTaskEntity> tasks) {
         collectTaskRespository.save(tasks);
+        dao.flush();
     }
 
     // 查询未入库记录
@@ -61,7 +69,14 @@ public class WastePriceService {
     
     public List<CollectTaskEntity> findNotInStorageLimit() {
     	Pageable pageable = new PageRequest(0, 100);
-    	Page<CollectTaskEntity> result = collectTaskRespository.findAll(pageable);
+    	Page<CollectTaskEntity> result = collectTaskRespository.findAll(new Specification<CollectTaskEntity>(){
+			@Override
+			public Predicate toPredicate(Root<CollectTaskEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				List<Predicate> predicates = new ArrayList<>();
+				Predicate p = cb.equal(root.<String>get("isLoad"), "0");
+				predicates.add(p);
+				return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
+			}},pageable);
         return result.getContent();
     }
 
