@@ -1,6 +1,5 @@
 package com.zhiluniao.jobs.tasks;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,8 +61,6 @@ public class LoadNotDownloadTask {
             for (CollectTaskEntity task : tasks) {
                 try {
                     int classId = 0;
-                    String localUri = task.getLocalUri();
-
                     //http://www.zgfp.com/price/View/  length : 31 
                     
                     String remoteUri = task.getRemoteUri();

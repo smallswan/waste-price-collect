@@ -121,8 +121,8 @@ public class AluminiumScrapPriceConverter implements Converter {
                         
                         if(lowAndHigh.length >= 2 && StringUtils.isNotBlank(lowAndHigh[0].trim()) && StringUtils.isNotBlank(lowAndHigh[1].trim())){
                         	log.info("lowAndHigh :{}|{}",lowAndHigh[0],lowAndHigh[1]);
-                        	price.setLowestPrice(new BigDecimal(lowAndHigh[0].trim().replaceAll(",", "")));
-                            price.setHighestPrice(new BigDecimal(lowAndHigh[1].trim().replaceAll(",", "")));
+                        	price.setLowestPrice(AmountFormatter.normalFormat(lowAndHigh[0]));
+                            price.setHighestPrice(AmountFormatter.normalFormat(lowAndHigh[1]));
                         }else{
                         	log.info("priceRange : {}",priceRange);
                         }
@@ -133,7 +133,7 @@ public class AluminiumScrapPriceConverter implements Converter {
                         price.setAvgPrice(new BigDecimal(tds.get(colsMap.get("avgPrice")).text()));
                     }
                     if (colsMap.containsKey("priceFloat") && StringUtils.isNotBlank(tds.get(colsMap.get("priceFloat")).text())) {
-                        price.setPriceFloat(new BigDecimal(tds.get(colsMap.get("priceFloat")).text().trim().replaceAll("", "")));
+                        price.setPriceFloat(AmountFormatter.normalFormat(tds.get(colsMap.get("priceFloat")).text()));
                     }
 
                     price.setSaveTime(now.toDate());

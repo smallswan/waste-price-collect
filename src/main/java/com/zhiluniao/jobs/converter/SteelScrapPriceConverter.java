@@ -53,7 +53,17 @@ public class SteelScrapPriceConverter implements Converter {
         DateTime now = new DateTime();
         List<WastePrice> prices = new ArrayList<WastePrice>();
         try {
-            Element table = doc.select("table").first();
+//            Element table = doc.select("table").first();
+        	Element table = null;
+        	int size = doc.select("table").size();
+        	if(size == 2){
+        		table = doc.select("table").first();
+        	}else if(size == 3){
+        		table = doc.select("table").get(1);
+        	}else{
+        		throw new RuntimeException("页面数据不符合预期");
+        	}
+        	
             Element tbody = table.select("tbody").first();
             Elements trs = tbody.select("tr");
 
@@ -165,8 +175,8 @@ public class SteelScrapPriceConverter implements Converter {
                     if(lowAndHigh.length >= 2 && StringUtils.isNotBlank(lowAndHigh[0]) && StringUtils.isNotBlank(lowAndHigh[1])){
                     	
                     	log.info("lowAndHigh {}|{}",lowAndHigh[0],lowAndHigh[1]);
-                        price.setLowestPrice(new BigDecimal(lowAndHigh[0].trim().replaceAll(",", "")));
-                        price.setHighestPrice(new BigDecimal(lowAndHigh[1].trim().replaceAll(",", "")));
+                        price.setLowestPrice(AmountFormatter.normalFormat(lowAndHigh[0]));
+                        price.setHighestPrice(AmountFormatter.normalFormat(lowAndHigh[1]));
                     }else{
                     	continue;
                     }
@@ -177,8 +187,8 @@ public class SteelScrapPriceConverter implements Converter {
                     String avgPrice = tds.get(colsMap.get("avgPrice")).text();
                     String[] lowAndHigh = avgPrice.split("-");
                     if (lowAndHigh.length == 2 && !StringUtils.isNotBlank(lowAndHigh[0]) && !StringUtils.isNotBlank(lowAndHigh[1])) {
-                        price.setLowestPrice(new BigDecimal(lowAndHigh[0].trim().replaceAll(",", "")));
-                        price.setHighestPrice(new BigDecimal(lowAndHigh[1].trim().replaceAll(",", "")));
+                        price.setLowestPrice(AmountFormatter.normalFormat(lowAndHigh[0]));
+                        price.setHighestPrice(AmountFormatter.normalFormat(lowAndHigh[1]));
                     } else if (StringUtils.isNotBlank(avgPrice)) {
                         if (StringUtils.isNumeric(avgPrice)) {
                             price.setAvgPrice(new BigDecimal(avgPrice));

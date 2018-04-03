@@ -51,7 +51,6 @@ public class IronScrapConverter implements Converter {
             }
 
             Element table = doc.getElementsByTag("table").first();
-//            log.info(table.text());
             Elements trs = table.select("tr");
             int row = 0;
             for (Element tr : trs) {
